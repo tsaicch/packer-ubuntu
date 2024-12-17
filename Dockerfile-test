@@ -1,0 +1,12 @@
+FROM ubuntu:22.04
+RUN apt-get update; apt-get install -y telnet curl tmux net-tools dnsutils gnupg tcpdump wget
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | tee /etc/apt/trusted.gpg.d/microsoft.asc
+RUN curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
+RUN apt-get update;ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc-dev
+# for gcp sdk
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg > /usr/share/keyrings/cloud.google.gpg
+#RUN wget https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x35baa0b33e9eb396f59ca838c0ba5ce6dc6315a3|apt-key add -
+RUN echo "deb https://packages.cloud.google.com/apt cloud-sdk main" >  /etc/apt/sources.list.d/google-cloud-sdk.list
+RUN apt-get update && apt-get install -y google-cloud-cli google-cloud-sdk-gke-gcloud-auth-plugin
+RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
