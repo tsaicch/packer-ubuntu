@@ -1,0 +1,25 @@
+#FROM quay.io/prometheus/busybox:latest
+#LABEL maintainer="Chamila de Alwis <me@chamila.dev>"
+#
+#ARG BINARY="kibana_exporter-latest-linux-amd64"
+#
+##COPY build/release/${BINARY} /bin/kibana_exporter
+##COPY build/kibana_exporter /bin/kibana_exporter
+#ADD build/kibana_exporter /bin/kibana_exporter
+#RUN chmod +x /bin/kibana_exporter
+#
+#ENTRYPOINT ["/bin/kibana_exporter"]
+#EXPOSE     9684
+
+# Due to cloud build not support COPY/ADD need to overwirte to multi-stage build
+# source kibana_exporter-latest
+
+FROM golang:alpine AS builder
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN GOOS=linux GOARCH=amd64 go build -o kibana_exporter
+
+FROM quay.io/prometheus/busybox:latest
+LABEL maintainer="Chamila de Alwis <me@chamila.dev>"
